@@ -11,9 +11,12 @@ RUN apt update && \
 RUN a2enmod cgi
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 
+# CGIソースコードとコンパイルスクリプトを一時的にコピー
 COPY ./cgi-bin /tmp/cgi-bin
-RUN gcc /tmp/cgi-bin/hello.c -o /usr/lib/cgi-bin/hello.cgi
-RUN chmod +x /usr/lib/cgi-bin/hello.cgi
+COPY compile_cgi.sh /tmp/compile_cgi.sh
+
+# コンパイルスクリプトを実行してCGIプログラムを生成・配置
+RUN chmod +x /tmp/compile_cgi.sh && /tmp/compile_cgi.sh
 
 RUN chmod 755 /usr/lib/cgi-bin/
 RUN find /usr/lib/cgi-bin/ -type f -exec chmod 755 {} \;
